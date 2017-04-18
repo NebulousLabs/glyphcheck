@@ -53,7 +53,7 @@ Only `err` is checked, so the call to `f.Write` can silently fail. This isn't
 much of an exploit, but creative minds can no doubt devise something more
 dangerous.
 
-Security-concious projects should run `glyphcheck` on all code submitted for
+Security-conscious projects should run `glyphcheck` on all code submitted for
 review. This is easily accomplished by adding the following lines to your
 `.travis.yml` or `appveyor.yml`:
 
