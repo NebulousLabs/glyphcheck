@@ -29,11 +29,12 @@ Flags:
 		flag.PrintDefaults()
 	}
 	scanComments := flag.Bool("comments", false, "also scan comments")
+	scanStringLits := flag.Bool("string-literals", true, "also scan string literals")
 	flag.Parse()
 
 	var lines []string
 	for _, file := range listFiles(flag.Args()) {
-		lines = append(lines, scanFile(file, *scanComments)...)
+		lines = append(lines, scanFile(file, *scanComments, *scanStringLits)...)
 	}
 	if len(lines) > 0 {
 		log.Fatalln(strings.Join(lines, "\n"))
@@ -61,7 +62,7 @@ func listFiles(args []string) (files []string) {
 
 // scanFile scans file and returns formatted error strings for each line in
 // file that contains a homoglyph.
-func scanFile(file string, scanComments bool) (lines []string) {
+func scanFile(file string, scanComments bool, scanStringLits bool) (lines []string) {
 	src, err := ioutil.ReadFile(file)
 	if err != nil {
 		log.Fatal(err)
@@ -83,6 +84,9 @@ func scanFile(file string, scanComments bool) (lines []string) {
 		pos, tok, lit := s.Scan()
 		if tok == token.EOF {
 			return
+		}
+		if !scanStringLits && tok == token.STRING {
+			continue
 		}
 		for _, c := range lit {
 			if c >= utf8.RuneSelf && isHomoglyph(c) {
